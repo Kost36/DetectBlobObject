@@ -156,5 +156,5 @@ for i in range(15): # Пробегаемся по 14 цифрам -> номер�
     outputImage=ProcessingImage(image, i) #Обработка image
     cv.imshow("Image " + i.__str__() + ". For next click exit", outputImage) #Вывод результата
     cv.imwrite(filePath + "_Result.png", outputImage)
-    btn = input()
-    #btn=cv.waitKey(0)
+    #btn = input()
+    btn=cv.waitKey(0)
