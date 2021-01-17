@@ -4,9 +4,9 @@ import pathlib as pathlib
 from math import *
 
 #Переменные
-dir = pathlib.Path.cwd().__str__() + "\img" #Путь к папке проекта
-thresholdSizeMul = 2.5 #Порог отклонения размера от среднего размера
-thresholdDistToCenterMul = 0.2 #Порог отклонения центра блоба от центров по осям X и Y
+dir=pathlib.Path.cwd().__str__()+"\img" #Путь к папке проекта
+thresholdSizeMul=2.5 #Порог отклонения размера от среднего размера
+thresholdDistToCenterMul=0.2 #Порог отклонения центра блоба от центров по осям X и Y
 
 #Расстояние между двумя точками
 def Distance(x1, y1, x2, y2):
@@ -15,8 +15,8 @@ def Distance(x1, y1, x2, y2):
 
 #Проверка позиций блобов
 def CheckPozitionBlobs(keypoints, xCentr, yCentr):
-    sumDistantionOfCenter = 0 #Сумма растояний до центра image
-    sumSize = 0 #Сумма размеров blob ов
+    sumDistantionOfCenter=0 #Сумма растояний до центра image
+    sumSize=0 #Сумма размеров blob ов
 
     #Считаем суммы
     for keypoint in keypoints:
@@ -66,9 +66,9 @@ def CheckPozitionBlobs(keypoints, xCentr, yCentr):
 
 # Проверка блобов
 def CheckBlobs(keypoints, xCentr, yCentr):
-    if (len(keypoints)!=4): #Должно быть 4 шт.
+    if (len(keypoints)!=4): # Должно быть 4 шт.
         return False
-    if (CheckPozitionBlobs(keypoints, xCentr, yCentr)==False): #Проверка позиций блобов.
+    if (CheckPozitionBlobs(keypoints, xCentr, yCentr) == False): # Проверка позиций блобов.
         return False
     return True
     pass
@@ -80,9 +80,9 @@ def SearchBlobs(image):
     params.minThreshold = 0
     params.maxThreshold = 255
     params.thresholdStep = 250  # Без шагов, т.к уже бинаризованных вход
-    params.filterByArea = True;
-    params.minArea = 1;
-    params.maxArea = 20000;
+    params.filterByArea = True
+    params.minArea = 1
+    params.maxArea = 20000
     params.filterByCircularity = True
     params.minCircularity = 0.6  # Увеличение приводит к NoSearch 4 блобов на 11 image
     params.maxCircularity = 1
@@ -99,7 +99,7 @@ def SearchBlobs(image):
     pass
 
 #Обработка изображения
-def ProcessingImage(imageInput):
+def ProcessingImage(imageInput, numberImage):
     # Получаем центра по X и Y
     xCentr = imageInput.shape[1]/2.0 #Центр по оси X
     yCentr = imageInput.shape[0]/2.0 #Центр по оси Y
@@ -136,11 +136,13 @@ def ProcessingImage(imageInput):
                                         (10, imageInput.shape[0]-10), #Позиция (X,Y начала текста)
                                         cv.FONT_HERSHEY_SIMPLEX, 2, #Тип фона, множитель размера
                                         (0, 255, 0), 5) #Цвет фона, толщина линий
+        print("Image " + numberImage.__str__() + " Yes")
     else: #Если проверка не пройдена
         imageWithKeypoints = cv.putText(imageWithKeypoints, 'No', #Image, текст
                                         (10, imageInput.shape[0]-10), #Позиция (X,Y начала текста)
                                         cv.FONT_HERSHEY_SIMPLEX, 2, #Тип фона, множитель размера
                                         (0, 0, 255), 5) #Цвет фона, толщина линий
+        print("Image " + numberImage.__str__() + " No")
 
     return imageWithKeypoints
     pass
@@ -151,6 +153,8 @@ for i in range(15): # Пробегаемся по 14 цифрам -> номер�
     image=cv.imread(filePath + ".bmp", cv.IMREAD_COLOR) #Грузим image в формате bmp
     if (image is None): #Если не загрузилось
         image = cv.imread(filePath + ".png", cv.IMREAD_COLOR)  #Грузим image в формате png
-
-    cv.imshow("Keypoints", ProcessingImage(image)) #Обработка image и вывод результата
-    cv.waitKey(0)
+    outputImage=ProcessingImage(image, i) #Обработка image
+    cv.imshow("Image " + i.__str__() + ". For next click exit", outputImage) #Вывод результата
+    cv.imwrite(filePath + "_Result.png", outputImage)
+    btn = input()
+    #btn=cv.waitKey(0)
